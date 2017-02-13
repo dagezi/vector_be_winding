@@ -43,7 +43,27 @@ module VectorBeWinding
 
     # Very naive definition. Each subclass is expected to override it
     def containingness(shape1)
-      bounding_rect.contains?(shape1.bounding_rect)
+      if shape1.class == Rect
+        [range_containingness(x0, x1, shape1.x0, shape1.x1),
+          range_containingness(y0, y1, shape1.y0, shape1.y1)].min
+      else
+        shape1.containingness(self)
+      end
+    end
+
+    def self.range_containingness(a0, a1, b0, b1)
+      if a0 > a1
+        a0, a1 = a1, a0
+      end
+      if b0 > b1
+        b0, b1 = b1, b0
+      end
+
+      if a0 <= b0
+        (b0 - a0) * (a1 - b1)
+      else
+        -1
+      end
     end
   end
 end

@@ -1,4 +1,4 @@
-Urequire "spec_helper"
+require "spec_helper"
 
 describe VectorBeWinding::Rect do
 
@@ -16,6 +16,23 @@ describe VectorBeWinding::Rect do
         ]
         examples.each {|expected, a0, a1, b0, b1|
           res = VectorBeWinding::Rect::range_intersectedness(a0, a1, b0, b1)
+          expect(signum(res)).to eq(expected)
+        }
+      end
+    end
+
+    describe "range_containingness" do
+      it 'returns correct result' do
+        examples = [
+          [-1, 2, 3, 1, 4],
+          [-1, 1, 3, 2, 4],
+          [-1, 2, 4, 1, 3],
+          [0, 1, 2, 1, 2],
+          [1, 1, 4, 2, 3],
+          [0, 1, 4, 1, 3]
+        ]
+        examples.each {|expected, a0, a1, b0, b1|
+          res = VectorBeWinding::Rect::range_containingness(a0, a1, b0, b1)
           expect(signum(res)).to eq(expected)
         }
       end
