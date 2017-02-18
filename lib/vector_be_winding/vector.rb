@@ -7,6 +7,10 @@ module VectorBeWinding
       @y = y
     end
 
+    def ==(v)
+      x == v.x && y == v.y
+    end
+
     def +(v)
       Vector.new(@x + v.x, @y + v.y)
     end

@@ -1,4 +1,7 @@
+require "savage"
 require "vector_be_winding/version"
 require "vector_be_winding/shape"
+require "vector_be_winding/vector"
 require "vector_be_winding/rect"
-
+require "vector_be_winding/segment"
+require "vector_be_winding/sub_path"

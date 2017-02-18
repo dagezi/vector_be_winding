@@ -8,11 +8,16 @@ module VectorBeWinding
     end
 
     def self.with_vectors(v0, v1)
-      self.new(v0.x, v0,y, v1.x, v1.y)
+      self.new(v0.x, v0.y, v1.x, v1.y)
     end
 
     def bounding_rect
       self
+    end
+
+    def ==(rect1)
+      left == rect1.left && top == rect1.top &&
+        right == rect1.right && bottom == rect1.bottom
     end
 
     def empty?
