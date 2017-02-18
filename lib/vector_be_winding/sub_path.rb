@@ -35,5 +35,12 @@ module VectorBeWinding
       end
       @bounding_rect
     end
+
+    # Calculate direction area of this path.
+    # It's positive iff the path forms clockwise.
+
+    def area()
+      segments.map { |seg| seg.area(start_point) }.reduce(:+)
+    end
   end
 end

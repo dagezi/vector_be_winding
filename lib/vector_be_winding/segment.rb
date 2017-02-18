@@ -36,5 +36,11 @@ module VectorBeWinding
       @bounding_rect ||=
         Rect.new(start_point.x, start_point.y, end_point.x, end_point.y)
     end
+
+    # Calculate direction area of the triangle (p, start_point, end_point)
+    # It must be positive iff the three points forms clockwise order.
+    def area(p)
+      (start_point - p).cross(end_point - start_point) / 2.0
+    end
   end
 end
