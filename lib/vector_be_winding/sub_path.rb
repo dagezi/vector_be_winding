@@ -9,20 +9,20 @@ module VectorBeWinding
     end
 
     def initialize(svg_subpath, start_point = Vector.new(0,0))
-      @start_point = start_point
       @svg_subpath = svg_subpath
       @segments = []
 
       point = start_point
       @svg_subpath.directions.each { |dir|
-        segment = Segment.new(dir, point, @start_point)
+        segment = Segment.new(dir, point, start_point)
         point = segment.end_point
         if segment.direction.kind_of?(Savage::Directions::MoveTo)
-          @start_point = point
+          start_point = point
         else
           @segments << segment
         end
       }
+      @start_point = start_point
     end
 
     def bounding_rect
