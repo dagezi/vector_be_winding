@@ -11,12 +11,32 @@ module VectorBeWinding
       x == v.x && y == v.y
     end
 
+    def -@()
+      Vector.new(-x, -y)
+    end
+
     def +(v)
-      Vector.new(@x + v.x, @y + v.y)
+      Vector.new(x + v.x, y + v.y)
+    end
+
+    def -(v)
+      Vector.new(x - v.x, y - v.y)
     end
 
     def *(s)
-      Vector.new(@x * s, @y * s)
+      Vector.new(x * s, y * s)
+    end
+
+    def dot(v)
+      x * v.x + y * v.y
+    end
+
+    def norm
+      dot(self)
+    end
+
+    def cross(v)
+      x * v.y - y * v.x
     end
   end
 end
