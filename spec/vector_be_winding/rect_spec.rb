@@ -75,5 +75,21 @@ module VectorBeWinding
         expect(r).to be_nil
       end
     end
+
+    describe 'containingness' do
+      it 'works right' do
+        expect(rect0.containingness(rect1)).to be < 0
+        expect(rect1.containingness(rect2)).to be >= 0
+      end
+    end
+
+    describe 'contains?' do
+      it 'works right' do
+        expect(rect0.contains?(rect1)).to be false
+        expect(rect1.contains?(rect0)).to be false
+        expect(rect1.contains?(rect2)).to be true
+        expect(rect2.contains?(rect1)).to be false
+      end
+    end
   end
 end

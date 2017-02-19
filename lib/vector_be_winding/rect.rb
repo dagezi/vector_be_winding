@@ -44,8 +44,8 @@ module VectorBeWinding
 
     def intersectedness(shape1)
       if shape1.class == Rect
-        [range_intersectedness(left, right, shape1.left, shape1.right),
-          range_intersectedness(top, bottom, shape1.top, shape1.bottom)].min
+        [Rect.range_intersectedness(left, right, shape1.left, shape1.right),
+         Rect.range_intersectedness(top, bottom, shape1.top, shape1.bottom)].min
       else
         shape1.intersectedness(self)
       end
@@ -59,14 +59,10 @@ module VectorBeWinding
       end
     end
 
-    # Very naive definition. Each subclass is expected to override it
     def containingness(shape1)
-      if shape1.class == Rect
-        [range_containingness(left, right, shape1.left, shape1.right),
-          range_containingness(top, bottom, shape1.top, shape1.bottom)].min
-      else
-        shape1.containingness(self)
-      end
+      b = shape1.bounding_rect
+      [Rect.range_containingness(left, right, b.left, b.right),
+       Rect.range_containingness(top, bottom, b.top, b.bottom)].min
     end
 
     # check [a0, a0] contains [b0, b1]
