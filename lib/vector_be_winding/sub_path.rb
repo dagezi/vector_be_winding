@@ -28,7 +28,7 @@ module VectorBeWinding
     end
 
     def bounding_rect
-      if @bounding_rect == nil
+      unless @bounding_rect
         rect = Rect.with_vectors(start_point, start_point)
         segments.each { |segment|
           rect |= segment.bounding_rect

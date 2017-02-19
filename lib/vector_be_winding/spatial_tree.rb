@@ -17,6 +17,14 @@ module VectorBeWinding
       end
     end
 
+    def depth
+      if children.empty?
+        1
+      else
+        children.map(&:depth).max + 1
+      end
+    end
+
     def dump(indent = 0)
       puts ' ' * (indent * 2) + inspect
       children.each {|node| node.dump(indent + 1)}
