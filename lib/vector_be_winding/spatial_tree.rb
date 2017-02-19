@@ -25,6 +25,11 @@ module VectorBeWinding
       end
     end
 
+    def each &pr
+      pr.call(self)
+      children.each {|node| node.each(&pr) }
+    end
+
     def dump(indent = 0)
       puts ' ' * (indent * 2) + inspect
       children.each {|node| node.dump(indent + 1)}
