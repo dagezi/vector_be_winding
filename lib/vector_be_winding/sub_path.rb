@@ -1,5 +1,7 @@
 module VectorBeWinding
   class SubPath < Shape
+    include SpatialTree
+
     attr_reader :start_point, :svg_subpath, :segments
 
     def self.with_string(path_string)
@@ -41,6 +43,10 @@ module VectorBeWinding
 
     def area()
       segments.map { |seg| seg.area(start_point) }.reduce(:+)
+    end
+
+    def inspect
+      "#<SubPath \"#{svg_subpath.to_command}\">"
     end
   end
 end

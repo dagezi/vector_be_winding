@@ -16,5 +16,10 @@ module VectorBeWinding
         containers.first.insert_to_tree(node)
       end
     end
+
+    def dump(indent = 0)
+      puts ' ' * (indent * 2) + inspect
+      children.each {|node| node.dump(indent + 1)}
+    end
   end
 end
