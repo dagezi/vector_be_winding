@@ -42,5 +42,26 @@ module VectorBeWinding
     def area(p)
       (start_point - p).cross(end_point - start_point) / 2.0
     end
+
+    def reverse_dir
+      case @direction.command_code.upcase
+      when 'Z'
+        ::Savage::Directions::LineTo.new(start_point.x, start_point.y, true)
+      when 'L'
+        ::Savage::Directions::LineTo.new(start_point.x, start_point.y, true)
+      when 'M'
+        nil  # Unable to reverse
+      when 'H'
+        ::Savage::Directions::HorizontalTo.new(start_point.x, true)
+      when 'V'
+        ::Savage::Directions::VerticalTo.new(start_point.y, true)
+      when 'C'
+        nil # TODO
+      when 'A'
+        nil # TODO
+      else
+        raise "Unknown direction: #{@direction}"
+      end
+    end
   end
 end

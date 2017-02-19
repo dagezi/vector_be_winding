@@ -23,5 +23,20 @@ module VectorBeWinding
       expect(clockwise_triangle_path.area).to eq(50)
       expect(anticlockwise_triangle_path.area).to eq(-50)
     end
+
+    describe "reverse" do
+      it "reverse simple path" do
+        reversed = line_path.reverse
+
+        expect(reversed.bounding_rect).to eq(line_path.bounding_rect)
+      end
+
+      it "reverse cw to ccw" do
+        reversed = clockwise_triangle_path.reverse
+
+        expect(reversed.bounding_rect).to eq(clockwise_triangle_path.bounding_rect)
+        expect(reversed.area).to eq(-50)
+      end
+    end
   end
 end

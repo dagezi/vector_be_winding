@@ -45,6 +45,14 @@ module VectorBeWinding
       segments.map { |seg| seg.area(start_point) }.reduce(:+)
     end
 
+    def reverse
+      svg_subpath = Savage::SubPath.new(start_point.x, start_point.y)
+      svg_subpath.directions.concat(segments.map(&:reverse_dir).reverse)
+      svg_subpath.close_path
+
+      SubPath.new(svg_subpath)
+    end
+
     def inspect
       "#<SubPath \"#{svg_subpath.to_command}\">"
     end
