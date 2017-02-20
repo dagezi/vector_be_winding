@@ -5,6 +5,7 @@ module VectorBeWinding
     let (:line_path) { SubPath.with_string('L5,20Z') }
     let (:clockwise_triangle_path) {SubPath.with_string('M10,10L20,20h-10Z')}
     let (:anticlockwise_triangle_path) {SubPath.with_string('M10,10L20,20v-10Z')}
+    let (:clockwise_not_close) {SubPath.with_string('M10,10L20,20h-10v-10')}
 
     it "can parse line path" do
       expect(line_path.start_point).to eq(Vector.new(0, 0))
@@ -22,6 +23,7 @@ module VectorBeWinding
     it "can calculate directed area" do
       expect(clockwise_triangle_path.area).to eq(50)
       expect(anticlockwise_triangle_path.area).to eq(-50)
+      expect(clockwise_not_close.area).to eq(50)
     end
 
     describe "reverse" do
@@ -37,6 +39,14 @@ module VectorBeWinding
         expect(reversed.bounding_rect).to eq(clockwise_triangle_path.bounding_rect)
         expect(reversed.area).to eq(-50)
       end
+
+      it "can reverse path not-ended with Z" do
+        reversed = clockwise_not_close.reverse
+
+        expect(reversed.bounding_rect).to eq(clockwise_not_close.bounding_rect)
+        expect(reversed.area).to eq(-50)
+      end
+
     end
   end
 end
