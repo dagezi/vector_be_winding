@@ -5,7 +5,8 @@ module VectorBeWinding
     end
 
     def insert_to_tree(node)
-      # self must contain the node
+      raise "#{node} is same node: " if equal?(node)
+
       containers = children.select {|n1| n1.contains?(node)}
       if containers.empty?
         components = children.select {|n1| node.contains?(n1)}

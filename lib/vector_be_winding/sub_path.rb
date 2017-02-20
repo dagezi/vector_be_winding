@@ -53,6 +53,16 @@ module VectorBeWinding
       SubPath.new(svg_subpath)
     end
 
+    def be_winding(sign = 1)
+      wound = if area * sign >= 0
+                SubPath.new(svg_subpath)
+              else
+                reverse
+              end
+      wound.children.concat(children.map { |c| c.be_winding(-sign) })
+      wound
+    end
+
     def inspect
       "#<SubPath \"#{svg_subpath.to_command}\">"
     end

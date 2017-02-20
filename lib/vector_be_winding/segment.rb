@@ -55,11 +55,8 @@ module VectorBeWinding
         ::Savage::Directions::HorizontalTo.new(start_point.x, true)
       when 'V'
         ::Savage::Directions::VerticalTo.new(start_point.y, true)
-      when 'C'
-        nil # TODO
-      when 'A'
-        nil # TODO
       else
+        # TODO: Support 'CSQTA'
         raise "Unknown direction: #{@direction}"
       end
     end
