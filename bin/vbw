@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require 'vector_be_winding'
+
+def exec(file)
+  drawable = VectorBeWinding::Drawable.new
+  p drawable
+  drawable.read_from_file(file)
+  drawable.be_winding
+  drawable.write(STDOUT)
+end
+
+exec(ARGV[0])
