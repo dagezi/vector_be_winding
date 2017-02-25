@@ -5,7 +5,11 @@ module VectorBeWinding
     attr_reader :sub_paths
 
     def self.with_string(path_string)
-      svg_path = Savage::Parser.parse(path_string)
+      begin
+        svg_path = Savage::Parser.parse(path_string)
+      rescue => e
+        raise ArgumentError, "Possibly wrong path string \"#{path_string}\""
+      end
       Path.new(svg_path.subpaths.map { |svg_subpath| SubPath.new(svg_subpath) })
     end
 
@@ -35,6 +39,10 @@ module VectorBeWinding
     def be_winding()
       wounds = children.map(&:be_winding)
       Path.new(wounds, true)
+    end
+
+    def to_command
+      sub_paths.map(&:to_command).join
     end
   end
 end

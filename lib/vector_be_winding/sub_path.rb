@@ -66,5 +66,9 @@ module VectorBeWinding
     def inspect
       "#<SubPath \"#{svg_subpath.to_command}\">"
     end
+
+    def to_command
+      @svg_subpath.to_command
+    end
   end
 end
