@@ -43,6 +43,10 @@ module VectorBeWinding
       (start_point - p).cross(end_point - start_point) / 2.0
     end
 
+    def reverse
+      Segment.new(reverse_dir, end_point, start_point)
+    end
+
     def reverse_dir
       case @direction.command_code.upcase
       when 'Z'
