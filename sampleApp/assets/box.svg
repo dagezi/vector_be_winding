@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Troublesome SVG using even-odd rule instead of non-zero rule. -->
+
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M10,10 30,10 30,30 10,30 Z M15,15 25,15 25,25 15,25 Z"
+        fill-rule="evenodd"/>
+</svg>
