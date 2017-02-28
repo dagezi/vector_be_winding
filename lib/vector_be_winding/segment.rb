@@ -1,35 +1,31 @@
 module VectorBeWinding
   class Segment < Shape
-    attr_reader :start_point, :direction, :end_point
+    attr_reader :start_point, :direction, :end_point,
+                :control_point, :control_point_1
 
     def initialize(direction, start_point, end_point_hint)
       @direction = direction
       @start_point = start_point
       @end_point =
         if @direction.kind_of?(::Savage::Directions::PointTarget)
-          if @direction.absolute?
-            Vector.new(@direction.target.x, @direction.target.y)
-          else
-          start_point +
-              Vector.new(@direction.target.x, @direction.target.y)
-          end
+          create_vector(@direction.target.x, @direction.target.y, @direction.absolute?)
         elsif @direction.kind_of?(::Savage::Directions::HorizontalTo)
-          if @direction.absolute?
-            Vector.new(@direction.target, start_point.y)
-          else
-            start_point + Vector.new(@direction.target, 0)
-          end
+          create_vector(@direction.target, nil, @direction.absolute?)
         elsif @direction.kind_of?(::Savage::Directions::VerticalTo)
-          if @direction.absolute?
-            Vector.new(start_point.x, @direction.target)
-          else
-            start_point + Vector.new(0, @direction.target)
-          end
+          create_vector(nil, @direction.target, @direction.absolute?)
         elsif @direction.kind_of?(::Savage::Directions::ClosePath)
           end_point_hint
         else
           raise "Unknown direction: #{@direction}"
         end
+    end
+
+    def create_vector(x, y, absolute)
+      if absolute
+        Vector.new(x || start_point.x, y || start_point.y)
+      else
+        start_point + Vector.new(x || 0, y || 0)
+      end
     end
 
     def bounding_rect
