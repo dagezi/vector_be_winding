@@ -30,12 +30,14 @@ module VectorBeWinding
       it "reverse simple path" do
         reversed = line_path.reverse
 
+        expect(reversed.start_point).to eq(line_path.start_point)
         expect(reversed.bounding_rect).to eq(line_path.bounding_rect)
       end
 
       it "reverse cw to ccw" do
         reversed = clockwise_triangle_path.reverse
 
+        expect(reversed.start_point).to eq(clockwise_triangle_path.start_point)
         expect(reversed.bounding_rect).to eq(clockwise_triangle_path.bounding_rect)
         expect(reversed.area).to eq(-50)
       end
@@ -43,6 +45,7 @@ module VectorBeWinding
       it "can reverse path not-ended with Z" do
         reversed = clockwise_not_close.reverse
 
+        expect(reversed.start_point).to eq(clockwise_not_close.start_point)
         expect(reversed.bounding_rect).to eq(clockwise_not_close.bounding_rect)
         expect(reversed.area).to eq(-50)
       end

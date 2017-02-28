@@ -10,7 +10,7 @@ module VectorBeWinding
       rescue => e
         raise ArgumentError, "Possibly wrong path string \"#{path_string}\""
       end
-      Path.new(svg_path.subpaths.map { |svg_subpath| SubPath.new(svg_subpath) })
+      Path.new(svg_path.subpaths.map { |svg_subpath| SubPath.with_svg(svg_subpath) })
     end
 
     def initialize(sub_paths, is_tree = false)

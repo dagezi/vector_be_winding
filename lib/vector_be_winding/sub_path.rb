@@ -4,13 +4,31 @@ module VectorBeWinding
 
     attr_reader :start_point, :svg_subpath, :segments
 
+    def self.with_segments(segments)
+      SubPath.new.init_with_segment(segments)
+    end
+
+    # Suppose all segments are connected
+    def init_with_segment(segments)
+      raise "No segments" if segments.empty?
+      @segments = segments
+      @svg_subpath = Savage::SubPath.new(segments.map(&:direction))
+      @start_point = segments.first.start_point
+      self
+    end
+
     def self.with_string(path_string)
       path = Savage::Parser.parse(path_string)
       raise "No subpaths: ${path_string}" if path.subpaths.empty?
-      SubPath.new(path.subpaths.last)
+      SubPath.with_svg(path.subpaths.last)
     end
 
-    def initialize(svg_subpath, start_point = Vector.new(0,0))
+    def self.with_svg(svg_subpath, start_point = nil)
+      SubPath.new.init_with_svg(svg_subpath, start_point)
+    end
+                                                      
+    def init_with_svg(svg_subpath, start_point = nil)
+      start_point ||= Vector.new(0,0)
       @svg_subpath = svg_subpath
       @segments = []
 
@@ -25,6 +43,7 @@ module VectorBeWinding
         end
       }
       @start_point = start_point
+      self
     end
 
     def bounding_rect
@@ -40,22 +59,17 @@ module VectorBeWinding
 
     # Calculate direction area of this path.
     # It's positive iff the path forms clockwise.
-
     def area()
       segments.map { |seg| seg.area(start_point) }.reduce(:+)
     end
 
     def reverse
-      svg_subpath = Savage::SubPath.new(start_point.x, start_point.y)
-      svg_subpath.directions.concat(segments.map(&:reverse_dir).reverse)
-      svg_subpath.close_path
-
-      SubPath.new(svg_subpath)
+      SubPath.with_segments(segments.map(&:reverse).reverse)
     end
 
     def be_winding(sign = 1)
       wound = if area * sign >= 0
-                SubPath.new(svg_subpath)
+                SubPath.with_svg(svg_subpath)
               else
                 reverse
               end
