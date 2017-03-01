@@ -15,6 +15,12 @@ module VectorBeWinding
                                    start_point, end_point) }
     let (:segment_z) { Segment.new(Savage::Directions::ClosePath.new(),
                                    start_point, end_point) }
+    let (:segment_c) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                     7, 8, 9, 10, 11, 12, true),
+                                   start_point, end_point) }
+    let (:segment_rc) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                      1, 2, 3, 4, 5, 6, true),
+                                   start_point, end_point) }
 
     describe "Segment for line" do
       it "has write end point" do
@@ -43,6 +49,24 @@ module VectorBeWinding
 
       it "calculates reverse segment" do
         reversed?(segment_z.reverse, segment_z)
+      end
+    end
+
+    describe "Segment for absolute cubic curve" do
+      it "calculates reverse segment" do
+        r = segment_c.reverse
+        reversed?(r, segment_c)
+        expect(r.control).to eq(segment_c.control_1)
+        expect(r.control_1).to eq(segment_c.control)
+      end
+    end
+
+    describe "Segment for relative cubic curve" do
+      it "calculates reversed segment" do
+        r = segment_rc.reverse
+        reversed?(r, segment_rc)
+        expect(r.control).to eq(segment_rc.control_1)
+        expect(r.control_1).to eq(segment_rc.control)
       end
     end
   end

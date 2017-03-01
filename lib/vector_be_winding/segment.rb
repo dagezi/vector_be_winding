@@ -1,7 +1,7 @@
 module VectorBeWinding
   class Segment < Shape
     attr_reader :start_point, :direction, :end_point,
-                :control_point, :control_point_1
+                :control, :control_1
 
     def initialize(direction, start_point, end_point_hint)
       @direction = direction
@@ -18,6 +18,18 @@ module VectorBeWinding
         else
           raise "Unknown direction: #{@direction}"
         end
+
+      if @direction.kind_of?(::Savage::Directions::QuadraticCurveTo)
+        @control = create_vector(
+          @direction.control.x, @direction.control.y, @direction.absolute?)
+      end
+
+      if @direction.kind_of?(::Savage::Directions::CubicCurveTo)
+        @control_1 = create_vector(
+          @direction.control_1.x, @direction.control_1.y, @direction.absolute?)
+      end
+
+      # TODO: Support 'S', 'T' and 'A'
     end
 
     def create_vector(x, y, absolute)
@@ -45,9 +57,7 @@ module VectorBeWinding
 
     def reverse_dir
       case @direction.command_code.upcase
-      when 'Z'
-        ::Savage::Directions::LineTo.new(start_point.x, start_point.y, true)
-      when 'L'
+      when 'Z', 'L'
         ::Savage::Directions::LineTo.new(start_point.x, start_point.y, true)
       when 'M'
         nil  # Unable to reverse
@@ -55,8 +65,15 @@ module VectorBeWinding
         ::Savage::Directions::HorizontalTo.new(start_point.x, true)
       when 'V'
         ::Savage::Directions::VerticalTo.new(start_point.y, true)
+      when 'Q', 'T'
+        ::Savage::Directions::QuadraticCurveTo.new(
+          control.x, control.y, start_point.x, start_point.y, true)
+      when 'C', 'S'
+        ::Savage::Directions::CubicCurveTo.new(
+          control.x, control.y, control_1.x, control_1.y,
+          start_point.x, start_point.y, true)
       else
-        # TODO: Support 'CSQTA'
+        # TODO: Support 'A'
         raise "Unknown direction: #{@direction}"
       end
     end
