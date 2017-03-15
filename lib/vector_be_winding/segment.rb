@@ -48,7 +48,19 @@ module VectorBeWinding
     # Calculate direction area of the triangle (p, start_point, end_point)
     # It must be positive iff the three points forms clockwise order.
     def area(p)
-      (start_point - p).cross(end_point - start_point) / 2.0
+      if @direction.kind_of?(::Savage::Directions::QuadraticCurveTo)
+        # Approximate with triangle
+        (start_point - p).cross(control - start_point) +
+          (control - p).cross(end_point - control)
+      elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
+        # Approximate with quadrangle
+        (start_point - p).cross(control - start_point) +
+          (control - p).cross(control_1 - control) +
+          (control_1 - p).cross(end_point - control_1)
+      else
+        # TODO: Support arc
+        (start_point - p).cross(end_point - start_point) / 2.0
+      end
     end
 
     def reverse
