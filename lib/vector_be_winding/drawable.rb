@@ -35,5 +35,16 @@ module VectorBeWinding
         end
       }
     end
+
+    def is_widing
+      @document.each_recursive {|node|
+        if node.name == 'path'
+          pathString = node.attributes['android:pathData']
+          path = Path.with_string(pathString)
+          return false if !path.is_widing
+        end
+      }
+      true
+    end
   end
 end

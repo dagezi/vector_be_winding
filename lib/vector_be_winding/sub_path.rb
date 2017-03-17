@@ -77,6 +77,10 @@ module VectorBeWinding
       wound
     end
 
+    def is_winding(sign = 1)
+      children.all? { |c| c.is_winding && c.area * area < 0}
+    end
+
     def inspect
       "#<SubPath \"#{svg_subpath.to_command}\">"
     end

@@ -36,6 +36,10 @@ module VectorBeWinding
       "#<Path>"
     end
 
+    def is_winding(sign = 1)
+      children.all? { |c| c.is_winding }
+    end
+
     def be_winding()
       wounds = children.map(&:be_winding)
       Path.new(wounds, true)

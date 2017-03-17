@@ -40,6 +40,14 @@ module VectorBeWinding
       expect(path_cw_cw_cw.area).to be_within(0.1).of(1400)
     end
 
+    describe "is_winding" do
+      it 'detect if it\'s widing or not' do
+        expect(path_cw_cw.is_winding).to be_falsey
+        expect(path_cw_ccw.is_winding).to be_truthy
+        expect(path_cw_cw_cw.is_winding).to be_falsey
+      end
+    end
+
     describe "be_winding" do
       it 'changes the direction of inner box' do
         wound = path_cw_cw.be_winding
