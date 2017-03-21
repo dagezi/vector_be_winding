@@ -1,12 +1,28 @@
 #!/usr/bin/env ruby
+require 'optparse'
 require 'vector_be_winding'
 
-def exec(file)
-  drawable = VectorBeWinding::Drawable.new
-  p drawable
-  drawable.read_from_file(file)
-  drawable.be_winding
-  drawable.write(STDOUT)
-end
+opt = OptionParser.new
 
-exec(ARGV[0])
+@dry_run = false
+@verbose = false
+@backup_ext = '.bak'
+
+opt.on('-n', 'Dry run') { @dry_run = true }
+opt.on('-v', 'Verbose') { @verbose = true }
+
+opt.parse!(ARGV)
+
+ARGV.each { |file|
+  drawable = VectorBeWinding::Drawable.new
+  print "#{file}\n" if @verbose
+  drawable.read_from_file(file)
+  if !drawable.is_winding
+
+    if !@dry_run
+      File.rename(file, file + @backup_ext)
+      drawable.be_winding
+      drawable.write_to_file(file)
+    end
+  end
+}

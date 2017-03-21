@@ -24,7 +24,7 @@ module VectorBeWinding
       @document.write outio
     end
 
-    def be_winding
+   def be_winding
       @document.each_recursive {|node|
         if node.name == 'path'
           pathString = node.attributes['android:pathData']
@@ -36,12 +36,12 @@ module VectorBeWinding
       }
     end
 
-    def is_widing
+    def is_winding
       @document.each_recursive {|node|
         if node.name == 'path'
           pathString = node.attributes['android:pathData']
           path = Path.with_string(pathString)
-          return false if !path.is_widing
+          return false if !path.is_winding
         end
       }
       true
