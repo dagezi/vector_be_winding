@@ -32,6 +32,10 @@ module VectorBeWinding
       # TODO: Support 'S', 'T' and 'A'
     end
 
+    def control_2
+      control
+    end
+
     def create_vector(x, y, absolute)
       if absolute
         Vector.new(x || start_point.x, y || start_point.y)
@@ -54,9 +58,9 @@ module VectorBeWinding
           (control - p).cross(end_point - control)
       elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
         # Approximate with quadrangle
-        (start_point - p).cross(control - start_point) +
-          (control - p).cross(control_1 - control) +
-          (control_1 - p).cross(end_point - control_1)
+        (start_point - p).cross(control_1 - start_point) +
+          (control_1 - p).cross(control_2 - control_1) +
+          (control_2 - p).cross(end_point - control_2)
       else
         # TODO: Support arc
         (start_point - p).cross(end_point - start_point) / 2.0

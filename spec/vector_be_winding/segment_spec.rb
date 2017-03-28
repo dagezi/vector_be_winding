@@ -38,7 +38,7 @@ module VectorBeWinding
                                      4, 8, 8, 12, 11, 12, true),
                                    start_point, end_point) }
     let (:segment_rc) { Segment.new(Savage::Directions::CubicCurveTo.new(
-                                      1, 4, 5, 8, 8, 8, true),
+                                      1, 4, 5, 8, 8, 8, false),
                                    start_point, end_point) }
 
     describe "Segment for line" do
@@ -107,6 +107,11 @@ module VectorBeWinding
     end
 
     describe "Segment for relative cubic curve" do
+      it "has absolute corrdinate" do
+        expect(segment_rc.control_1).to eq(Vector.new(4, 8))
+        expect(segment_rc.control_2).to eq(Vector.new(8, 12))
+      end
+
       it "calculates signed area" do
         # not so correct. only sign
         expect(segment_rc.area(segment_c.start_point)).to be < 0
