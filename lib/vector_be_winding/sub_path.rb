@@ -34,7 +34,7 @@ module VectorBeWinding
 
       point = start_point
       @svg_subpath.directions.each { |dir|
-        segment = Segment.new(dir, point, start_point)
+        segment = Segment.new(dir, point, start_point, segments.last)
         point = segment.end_point
         if segment.direction.kind_of?(Savage::Directions::MoveTo)
           start_point = point
