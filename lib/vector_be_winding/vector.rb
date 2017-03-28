@@ -38,5 +38,10 @@ module VectorBeWinding
     def cross(v)
       x * v.y - y * v.x
     end
+
+    # Create reflection point of self 
+    def reflect(v)
+      v + (v - self)
+    end
   end
 end

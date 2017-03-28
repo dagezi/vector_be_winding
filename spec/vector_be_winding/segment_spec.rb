@@ -9,39 +9,14 @@ module VectorBeWinding
   describe Segment do
     let (:start_point) { Vector.new(3, 4) }
     let (:end_point)   { Vector.new(5, 6) }
-    let (:segment_l) { Segment.new(Savage::Directions::LineTo.new(1, 2, false),
-                                   start_point, end_point) }
-    let (:segment_v) { Segment.new(Savage::Directions::VerticalTo.new(2, false),
-                                   start_point, end_point) }
-    let (:segment_z) { Segment.new(Savage::Directions::ClosePath.new(),
-                                   start_point, end_point) }
-
-    let (:segment_q) { Segment.new(Savage::Directions::QuadraticCurveTo.new(
-                                     4, 8, 11, 12, true),
-                                   start_point, end_point)}
-
-    ##                    1 1 1
-    ##    2 3 4 5 6 7 8 9 0 1 2
-    ##  3 . . . . . . . . . . .
-    ##  4 . S . . . . . . . . .
-    ##  5 . . . . . . . . . . .
-    ##  6 . . . . . . . . . . .
-    ##  7 . . . . . . . . . . .
-    ##  8 . . C . . . . . . . .
-    ##  9 . . . . . . . . . . .
-    ## 10 . . . . . . . . . . .
-    ## 11 . . . . . . . . . . .
-    ## 12 . . . . . . C . . E .
-    ## 13 . . . . . . . . . . .
-
-    let (:segment_c) { Segment.new(Savage::Directions::CubicCurveTo.new(
-                                     4, 8, 8, 12, 11, 12, true),
-                                   start_point, end_point) }
-    let (:segment_rc) { Segment.new(Savage::Directions::CubicCurveTo.new(
-                                      1, 4, 5, 8, 8, 8, false),
-                                   start_point, end_point) }
+    let (:segment_s) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                     12, 8, 12, 4, true),
+                                   segment_c.end_point, end_point, segment_c) }
 
     describe "Segment for line" do
+      let (:segment_l) { Segment.new(Savage::Directions::LineTo.new(1, 2, false),
+                                     start_point, end_point) }
+
       it "has write end point" do
         expect(segment_l.end_point).to eq(Vector.new(4, 6))
       end
@@ -59,6 +34,9 @@ module VectorBeWinding
     end
 
     describe "Segment for vetical line" do
+      let (:segment_v) { Segment.new(Savage::Directions::VerticalTo.new(2, false),
+                                     start_point, end_point) }
+
       it "has write end point" do
         expect(segment_v.end_point).to eq(Vector.new(3, 6))
       end
@@ -69,6 +47,9 @@ module VectorBeWinding
     end
 
     describe "Segment for close path" do
+      let (:segment_z) { Segment.new(Savage::Directions::ClosePath.new(),
+                                     start_point, end_point) }
+
       it "has the sub path's start point as end point" do
         expect(segment_z.end_point).to eq(end_point)
       end
@@ -77,6 +58,10 @@ module VectorBeWinding
         reversed?(segment_z.reverse, segment_z)
       end
     end
+
+    let (:segment_q) { Segment.new(Savage::Directions::QuadraticCurveTo.new(
+                                     4, 8, 11, 12, true),
+                                   start_point, end_point)}
 
     describe "Segment for absolute quadratic curve" do
       it "calculates signed area" do
@@ -91,6 +76,34 @@ module VectorBeWinding
       end
     end
     
+    describe "Segment for short-cut quadratic curve" do
+      let (:segment_t) { Segment.new(Savage::Directions::QuadraticCurveTo.new(
+                                       15, 12, true),
+                                     segment_q.end_point, end_point, segment_q)}
+
+      it "has derived control point" do
+        expect(segment_t.control).to eq(Vector.new(18, 16))
+      end
+    end
+
+    ##                    1 1 1 1 1 1
+    ##    2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    ##  3 . . . . . . . . . . . . . .     
+    ##  4 . S . . . . . . . . E . . .     
+    ##  5 . . . . . . . . . . . . . .     
+    ##  6 . . . . . . . . . . . . . .     
+    ##  7 . . . . . . . . . . . . . .     
+    ##  8 . . C . . . . . . . C . . .     
+    ##  9 . . . . . . . . . . . . . .     
+    ## 10 . . . . . . . . . . . . . . 
+    ## 11 . . . . . . . . . . . . . . 
+    ## 12 . . . . . . C . . E . . C . 
+    ## 13 . . . . . . . . . . . . . .
+
+    let (:segment_c) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                     4, 8, 8, 12, 11, 12, true),
+                                   start_point, end_point) }
+
     describe "Segment for absolute cubic curve" do
       it "calculates signed area" do
         # not so correct. only sign
@@ -106,7 +119,24 @@ module VectorBeWinding
       end
     end
 
+    describe "Segment for short-cut cubic curve" do
+      let (:segment_s) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                       12, 8, 12, 4, true),
+                                     segment_c.end_point, end_point, segment_c) }
+
+      it "has correct coordinate" do
+        expect(segment_s.start_point).to eq(Vector.new(11, 12))
+        expect(segment_s.control_1).to eq(Vector.new(14, 12))
+        expect(segment_s.control_2).to eq(Vector.new(12, 8))
+        expect(segment_s.end_point).to eq(Vector.new(12, 4))
+      end
+    end
+
     describe "Segment for relative cubic curve" do
+      let (:segment_rc) { Segment.new(Savage::Directions::CubicCurveTo.new(
+                                        1, 4, 5, 8, 8, 8, false),
+                                      start_point, end_point) }
+
       it "has absolute corrdinate" do
         expect(segment_rc.control_1).to eq(Vector.new(4, 8))
         expect(segment_rc.control_2).to eq(Vector.new(8, 12))

@@ -3,7 +3,7 @@ module VectorBeWinding
     attr_reader :start_point, :direction, :end_point,
                 :control, :control_1
 
-    def initialize(direction, start_point, end_point_hint)
+    def initialize(direction, start_point, end_point_hint, prev_segment = nil)
       @direction = direction
       @start_point = start_point
       @end_point =
@@ -19,17 +19,21 @@ module VectorBeWinding
           raise "Unknown direction: #{@direction}"
         end
 
-      if @direction.kind_of?(::Savage::Directions::QuadraticCurveTo)
-        @control = create_vector(
-          @direction.control.x, @direction.control.y, @direction.absolute?)
+      if @direction.instance_of?(::Savage::Directions::QuadraticCurveTo)
+        control = @direction.control ||
+                  prev_segment.control&.reflect(start_point) ||
+                  start_point
+        @control = create_vector(control.x, control.y, @direction.absolute?)
+      elsif @direction.instance_of?(::Savage::Directions::CubicCurveTo)
+        control = @direction.control
+        control_1 = @direction.control_1 ||
+                  prev_segment.control&.reflect(start_point) ||
+                  start_point
+        @control = create_vector(control.x, control.y, @direction.absolute?)
+        @control_1 = create_vector(control_1.x, control_1.y, @direction.absolute?)
       end
 
-      if @direction.kind_of?(::Savage::Directions::CubicCurveTo)
-        @control_1 = create_vector(
-          @direction.control_1.x, @direction.control_1.y, @direction.absolute?)
-      end
-
-      # TODO: Support 'S', 'T' and 'A'
+      # TODO: Support 'A'
     end
 
     def control_2
@@ -56,7 +60,7 @@ module VectorBeWinding
         # Approximate with triangle
         (start_point - p).cross(control - start_point) +
           (control - p).cross(end_point - control)
-      elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
+     elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
         # Approximate with quadrangle
         (start_point - p).cross(control_1 - start_point) +
           (control_1 - p).cross(control_2 - control_1) +
