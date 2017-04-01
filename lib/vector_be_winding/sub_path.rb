@@ -12,8 +12,9 @@ module VectorBeWinding
     def init_with_segment(segments)
       raise "No segments" if segments.empty?
       @segments = segments
-      @svg_subpath = Savage::SubPath.new(segments.map(&:direction))
       @start_point = segments.first.start_point
+      @svg_subpath = Savage::SubPath.new(start_point.x, start_point.y)
+      @svg_subpath.directions.concat(segments.map(&:direction))
       self
     end
 
@@ -77,7 +78,7 @@ module VectorBeWinding
       wound
     end
 
-    def is_winding(sign = 1)
+    def is_winding
       children.all? { |c| c.is_winding && c.area * area < 0}
     end
 

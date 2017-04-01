@@ -32,6 +32,11 @@ module VectorBeWinding
 
         expect(reversed.start_point).to eq(line_path.start_point)
         expect(reversed.bounding_rect).to eq(line_path.bounding_rect)
+
+        directions = reversed.svg_subpath.directions
+        expect(directions[0]).to be_instance_of(Savage::Directions::MoveTo)
+        expect(directions[1]).to be_instance_of(Savage::Directions::LineTo)
+        expect(directions[2]).to be_instance_of(Savage::Directions::LineTo)
       end
 
       it "reverse cw to ccw" do
