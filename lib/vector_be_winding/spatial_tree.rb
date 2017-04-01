@@ -32,7 +32,7 @@ module VectorBeWinding
     end
 
     def dump(indent = 0)
-      puts ' ' * (indent * 2) + inspect
+      puts ' ' * (indent * 2) + (area < 0 ? '-' : '+') + inspect
       children.each {|node| node.dump(indent + 1)}
     end
   end

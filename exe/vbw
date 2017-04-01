@@ -6,22 +6,26 @@ opt = OptionParser.new
 
 @dry_run = false
 @verbose = false
+@debug = false
 @backup_ext = '.bak'
 
 opt.on('-n', 'Dry run') { @dry_run = true }
 opt.on('-v', 'Verbose') { @verbose = true }
+opt.on('-d', 'Debug') { @debug = true }
 
 opt.parse!(ARGV)
 
 ARGV.each { |file|
   drawable = VectorBeWinding::Drawable.new
-  print "#{file}\n" if @verbose
   drawable.read_from_file(file)
   if !drawable.is_winding
+    print "Not winding: #{file}\n" if @verbose
+    drawable.dump if @debug
 
     if !@dry_run
       File.rename(file, file + @backup_ext)
       drawable.be_winding
+      drawable.dump if @debug
       drawable.write_to_file(file)
     end
   end

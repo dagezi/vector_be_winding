@@ -46,5 +46,16 @@ module VectorBeWinding
       }
       true
     end
+
+    def dump
+      @document.each_recursive {|node|
+        if node.name == 'path'
+          pathString = node.attributes['android:pathData']
+          path = Path.with_string(pathString)
+          puts "Path"
+          path.dump(1)
+        end
+      }
+    end
   end
 end
