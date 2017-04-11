@@ -23,6 +23,8 @@ import android.widget.TextView;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.toggleImageBackground();
                 return true;
             case R.id.toggle_only_orig:
-                // TODO:
+                adapter.toggleShowOnlyOrig();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -94,24 +96,60 @@ public class MainActivity extends AppCompatActivity {
     private class DrawableResourcesAdaptor extends RecyclerView.Adapter<ViewHolder> {
         private final List<Field> fields = new ArrayList<>();
         private boolean darkBackground = false;
+        private boolean onlyOrig = false;
+        private final R.drawable drawableResources = new R.drawable();
 
         public DrawableResourcesAdaptor() {
-             R.drawable drawableResources = new R.drawable();
+            updateFields();
+        }
 
-             for (Field f : R.drawable.class.getDeclaredFields()) {
-                 try {
-                     int resourceId = 0;
-                     resourceId = f.getInt(drawableResources);
-                     Drawable drawable = AppCompatResources.getDrawable(MainActivity.this, resourceId);
-                     if (drawable instanceof VectorDrawableCompat ||
-                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                                     drawable instanceof VectorDrawable) {
-                         fields.add(f);
-                     }
-                 } catch (Exception e) {
-                     e.printStackTrace();
-                 }
-             }
+        private void updateFields() {
+            fields.clear();
+
+            for (Field f : R.drawable.class.getDeclaredFields()) {
+                try {
+                    int resourceId = 0;
+                    resourceId = f.getInt(drawableResources);
+                    Drawable drawable = AppCompatResources.getDrawable(MainActivity.this, resourceId);
+                    if (isKindaVectorDrawable(drawable)) {
+                        if (onlyOrig) {
+                            addPair(f);
+                        } else {
+                            fields.add(f);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        Pattern ORIG_NAMES = Pattern.compile("(.*)_orig");
+
+        private void addPair(Field f)  {
+            String name = f.getName();
+            Matcher m = ORIG_NAMES.matcher(name);
+            if (m.matches()) {
+                String origName = m.toMatchResult().group(1);
+                try {
+                    Field orig = R.drawable.class.getField(origName);
+                    int origId = f.getInt(drawableResources);
+                    Drawable drawable = AppCompatResources.getDrawable(MainActivity.this, origId);
+
+                    if (drawable != null) {
+                        fields.add(f);
+                        fields.add(orig);
+                    }
+                } catch (Exception e) {
+                    // Ignore.
+                }
+            }
+        }
+
+        private boolean isKindaVectorDrawable(Drawable drawable) {
+            return drawable instanceof VectorDrawableCompat ||
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                            drawable instanceof VectorDrawable;
         }
 
         @Override
@@ -133,6 +171,12 @@ public class MainActivity extends AppCompatActivity {
 
         public void toggleImageBackground() {
             darkBackground = !darkBackground;
+            notifyDataSetChanged();
+        }
+
+        public void toggleShowOnlyOrig() {
+            onlyOrig = !onlyOrig;
+            updateFields();
             notifyDataSetChanged();
         }
     }
