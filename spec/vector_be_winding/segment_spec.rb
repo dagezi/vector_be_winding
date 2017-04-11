@@ -22,7 +22,9 @@ module VectorBeWinding
       end
 
       it "calculates reverse segment" do
-        reversed?(segment_l.reverse, segment_l)
+        reversed = segment_l.reverse
+        reversed?(reversed, segment_l)
+        expect(reversed.direction).to be_an_instance_of(::Savage::Directions::LineTo)
       end
 
       it "calculates signed area" do
@@ -42,7 +44,9 @@ module VectorBeWinding
       end
 
       it "calculates reverse segment" do
-        reversed?(segment_v.reverse, segment_v)
+        reversed = segment_v.reverse
+        reversed?(reversed, segment_v)
+        expect(reversed.direction).to be_an_instance_of(::Savage::Directions::VerticalTo)
       end
     end
 
@@ -71,6 +75,7 @@ module VectorBeWinding
       it "calculates reverse segment" do
         r = segment_q.reverse
         reversed?(r, segment_q)
+        expect(r.direction).to be_instance_of(Savage::Directions::QuadraticCurveTo)
         expect(r.control).to eq(segment_q.control)
         expect(r.area(r.start_point)).to be > 0
       end
