@@ -7,11 +7,18 @@ opt = OptionParser.new
 @dry_run = false
 @verbose = false
 @debug = false
-@backup_ext = '.bak'
+@backup_template = '%{p}.bak'
 
 opt.on('-n', 'Dry run') { @dry_run = true }
 opt.on('-v', 'Verbose') { @verbose = true }
 opt.on('-d', 'Debug') { @debug = true }
+opt.on('-i TEMP', 'Template of back-up filename. Default; ".bak"') { |temp|
+  @backup_template = if temp.index('%')
+                      temp
+                    else
+                      '%{p}' + temp
+                    end
+}
 
 opt.parse!(ARGV)
 
@@ -23,7 +30,14 @@ ARGV.each { |file|
     drawable.dump if @debug
 
     if !@dry_run
-      File.rename(file, file + @backup_ext)
+      args = {
+        d: File.dirname(file),
+        p: file,
+        r: File.basename(file, File.extname(file)),
+        e: File.extname(file)
+      }
+
+      File.rename(file, @backup_template % args)
       drawable.be_winding
       drawable.dump if @debug
       drawable.write_to_file(file)
