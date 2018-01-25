@@ -80,7 +80,7 @@ module VectorBeWinding
         expect(r.area(r.start_point)).to be > 0
       end
     end
-    
+
     describe "Segment for short-cut quadratic curve" do
       let (:segment_t) { Segment.new(Savage::Directions::QuadraticCurveTo.new(
                                        15, 12, true),
@@ -93,16 +93,16 @@ module VectorBeWinding
 
     ##                    1 1 1 1 1 1
     ##    2 3 4 5 6 7 8 9 0 1 2 3 4 5
-    ##  3 . . . . . . . . . . . . . .     
-    ##  4 . S . . . . . . . . E . . .     
-    ##  5 . . . . . . . . . . . . . .     
-    ##  6 . . . . . . . . . . . . . .     
-    ##  7 . . . . . . . . . . . . . .     
-    ##  8 . . C . . . . . . . C . . .     
-    ##  9 . . . . . . . . . . . . . .     
-    ## 10 . . . . . . . . . . . . . . 
-    ## 11 . . . . . . . . . . . . . . 
-    ## 12 . . . . . . C . . E . . C . 
+    ##  3 . . . . . . . . . . . . . .
+    ##  4 . S . . . . . . . . E . . .
+    ##  5 . . . . . . . . . . . . . .
+    ##  6 . . . . . . . . . . . . . .
+    ##  7 . . . . . . . . . . . . . .
+    ##  8 . . C . . . . . . . C . . .
+    ##  9 . . . . . . . . . . . . . .
+    ## 10 . . . . . . . . . . . . . .
+    ## 11 . . . . . . . . . . . . . .
+    ## 12 . . . . . . C . . E . . C .
     ## 13 . . . . . . . . . . . . . .
 
     let (:segment_c) { Segment.new(Savage::Directions::CubicCurveTo.new(
@@ -158,6 +158,23 @@ module VectorBeWinding
         expect(r.control).to eq(segment_rc.control_1)
         expect(r.control_1).to eq(segment_rc.control)
         expect(r.area(r.start_point)).to be > 0
+      end
+    end
+
+    describe "Segment for arc" do
+      let (:segment_a) { Segment.new(Savage::Directions::ArcTo.new(
+                                       5, 5, 100, false, false, end_point.x, end_point.y, true),
+                                     start_point, end_point) }
+      it "calculates signed area" do
+        # not so correct, only sign matters
+        expect(segment_a.area(start_point)).to be < 0
+      end
+
+      it "reverses" do
+        r = segment_a.reverse
+        reversed?(r, segment_a)
+        expect(r.radius).to eq(segment_a.radius)
+        expect(r.area(start_point)).to be > 0
       end
     end
   end
