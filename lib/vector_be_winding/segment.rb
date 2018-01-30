@@ -1,7 +1,8 @@
 module VectorBeWinding
   class Segment < Shape
     attr_reader :start_point, :direction, :end_point,
-                :control, :control_1
+                :control, :control_1,
+                :radius, :rotation, :large_arc, :sweep
 
     def initialize(direction, start_point, end_point_hint, prev_segment = nil)
       @direction = direction
@@ -31,9 +32,12 @@ module VectorBeWinding
                   start_point
         @control = create_vector(control.x, control.y, @direction.absolute?)
         @control_1 = create_vector(control_1.x, control_1.y, @direction.absolute?)
+      elsif @direction.instance_of?(::Savage::Directions::ArcTo)
+        @radius = @direction.radius
+        @rotation = @direction.rotation
+        @large_arc = @direction.large_arc
+        @sweep = @direction.sweep
       end
-
-      # TODO: Support 'A'
     end
 
     def control_2
@@ -60,13 +64,15 @@ module VectorBeWinding
         # Approximate with triangle
         (start_point - p).cross(control - start_point) +
           (control - p).cross(end_point - control)
-     elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
+      elsif @direction.kind_of?(::Savage::Directions::CubicCurveTo)
         # Approximate with quadrangle
         (start_point - p).cross(control_1 - start_point) +
           (control_1 - p).cross(control_2 - control_1) +
           (control_2 - p).cross(end_point - control_2)
+      elsif @direction.kind_of?(::Savage::Directions::ArcTo)
+        # Very rough approximation. TODO: Be more precise
+        (start_point - p).cross(end_point - start_point) / 2.0 + (sweep ? 1 : -1)
       else
-        # TODO: Support arc
         (start_point - p).cross(end_point - start_point) / 2.0
       end
     end
@@ -92,8 +98,10 @@ module VectorBeWinding
         ::Savage::Directions::CubicCurveTo.new(
           control.x, control.y, control_1.x, control_1.y,
           start_point.x, start_point.y, true)
+      when 'A'
+        ::Savage::Directions::ArcTo.new(
+          radius.x, radius.y, rotation, large_arc, !sweep, start_point.x, start_point.y, true)
       else
-        # TODO: Support 'A'
         raise "Unknown direction: #{@direction}"
       end
     end

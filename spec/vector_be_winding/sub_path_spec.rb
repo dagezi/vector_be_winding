@@ -6,6 +6,8 @@ module VectorBeWinding
     let (:clockwise_triangle_path) {SubPath.with_string('M10,10L20,20h-10Z')}
     let (:anticlockwise_triangle_path) {SubPath.with_string('M10,10L20,20v-10Z')}
     let (:clockwise_not_close) {SubPath.with_string('M10,10L20,20h-10v-10')}
+    let (:clockwise_arc_path) {SubPath.with_string('M300,200 a150,150 0 1,1 150,150 z')}
+    let (:anticlockwise_arc_path) {SubPath.with_string('M300,200 a150,150 0 1,0 150,-150 z')}
 
     it "can parse line path" do
       expect(line_path.start_point).to eq(Vector.new(0, 0))
@@ -24,6 +26,9 @@ module VectorBeWinding
       expect(clockwise_triangle_path.area).to eq(50)
       expect(anticlockwise_triangle_path.area).to eq(-50)
       expect(clockwise_not_close.area).to eq(50)
+
+      expect(clockwise_arc_path.area).to be > 0
+      expect(anticlockwise_arc_path.area).to be < 0
     end
 
     describe "reverse" do
@@ -55,6 +60,12 @@ module VectorBeWinding
         expect(reversed.area).to eq(-50)
       end
 
+      it "can reverse arc" do
+        reversed = clockwise_arc_path.reverse
+
+        expect(reversed.start_point).to eq(clockwise_arc_path.start_point)
+        expect(reversed.area).to be < 0
+      end
     end
   end
 end
